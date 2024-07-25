@@ -13,15 +13,14 @@ import router from './router'
 
 const app = createApp(App)
 
-app
-    .use(createPinia())
-    .use(router)
-    .use(PrimeVue, {
+app.use(createPinia())
+app.use(router)
+app.use(PrimeVue, {
         theme: {
             preset: Aura
         }
     })
-    .component('app-menubar', Menubar)
-    .mount('#app');
+app.component('app-menubar', Menubar)
+app.mount('#app');
 
 

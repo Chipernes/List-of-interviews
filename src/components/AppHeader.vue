@@ -1,32 +1,41 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {ref, computed} from "vue";
+import type {ComputedRef} from "vue";
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
 
 type MenuItem = {
   label: string,
   icon: string,
-  path: string
+  path: string,
+  show: ComputedRef<boolean>
 }
 
 const items = ref<MenuItem[]>([
   {
     label: 'Authorization',
     icon: 'pi pi-user',
-    path: '/auth'
+    path: '/auth',
+    show: computed((): boolean => !userStore.userId)
   },
   {
     label: 'Add',
     icon: 'pi pi-plus',
-    path: '/'
+    path: '/',
+    show: computed((): boolean => !!userStore.userId)
   },
   {
     label: 'List of interviews',
     icon: 'pi pi-list',
-    path: '/list'
+    path: '/list',
+    show: computed((): boolean => !!userStore.userId)
   },
   {
     label: 'Statistic',
     icon: 'pi pi-chart-pie',
-    path: '/statistic'
+    path: '/statistic',
+    show: computed((): boolean => !!userStore.userId)
   }
 ]);
 </script>
@@ -34,10 +43,18 @@ const items = ref<MenuItem[]>([
 <template>
   <app-menubar :model="items" class="menu">
     <template #item="{ item, props }">
-      <router-link to="item.path" class="flex align-items-center" v-bind="props.action">
-        <span :class="item.icon" class="p-menuitem-icon"></span>
-        <span class="ml-2">{{ item.label }}</span>
-      </router-link>
+      <template v-if="item.show">
+        <router-link :to="item.path" class="flex align-items-center" v-bind="props.action">
+          <span :class="item.icon" class="p-menuitem-icon" />
+          <span class="ml-2">{{ item.label }}</span>
+        </router-link>
+      </template>
+    </template>
+    <template #end>
+      <span v-if="userStore.userId" @click="userStore.userId = ''" class="flex align-items-center menu-exit">
+        <span class="pi pi-sign-out p-menuitem-icon" />
+        <span class="ml-2">Exit</span>
+      </span>
     </template>
   </app-menubar>
 </template>
