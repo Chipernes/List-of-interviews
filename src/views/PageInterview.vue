@@ -1,6 +1,11 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
-  Some content
+  <h1>Interview</h1>
 </template>
+
+<style scoped>
+
+</style>
