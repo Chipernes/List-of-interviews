@@ -21,7 +21,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <app-progress class="flex h-screen" v-if="isLoading"/>
+  <app-progress class="progress-spinner" v-if="isLoading"/>
   <div v-else class="container">
     <AppHeader/>
     <div class="content">
