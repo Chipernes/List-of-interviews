@@ -9,6 +9,7 @@ import {
   getDocs,
   deleteDoc,
   doc,
+  where
 } from "firebase/firestore";
 import {useUserStore} from "@/stores/user";
 import {useConfirm} from "primevue/useconfirm";
@@ -19,9 +20,37 @@ const confirm = useConfirm();
 
 const interviews = ref<Interview[]>([]);
 const isLoading = ref<boolean>(true);
+const selectedFilterResult = ref<string>('');
 
-const getAllInterviews = async <T extends Interview>(): Promise<T[]> => {
-  const getData = query(collection(db, `users/${userStore.userId}/interviews`), orderBy('createdAt', 'desc'));
+const submitFilter = async (): Promise<void> => {
+  isLoading.value = true;
+  const listInterviews: Array<Interview> = await getAllInterviews(true);
+  interviews.value = listInterviews;
+  isLoading.value = false;
+}
+
+const clearFilter = async (): Promise<void> => {
+  isLoading.value = true;
+  const listInterviews: Array<Interview> = await getAllInterviews();
+  interviews.value = listInterviews;
+  isLoading.value = false;
+}
+
+const getAllInterviews = async <T extends Interview>(isFilter?: boolean): Promise<T[]> => {
+  let getData;
+
+  if (isFilter) {
+    getData = query(
+        collection(db, `users/${userStore.userId}/interviews`),
+        orderBy('createdAt', 'desc'),
+        where('result', '==', selectedFilterResult.value)
+    )
+  } else {
+    getData = query(
+        collection(db, `users/${userStore.userId}/interviews`),
+        orderBy('createdAt', 'desc')
+    )
+  }
 
   const listDocs = await getDocs(getData);
 
@@ -42,7 +71,7 @@ const confirmRemoveInterview = async (id: string): Promise<void> => {
       await deleteDoc(doc(db, `users/${userStore.userId}/interviews`, id));
 
       const listInterviews: Array<Interview> = await getAllInterviews();
-      interviews.value = [...listInterviews];
+      interviews.value = listInterviews;
 
       isLoading.value = false;
     }
@@ -51,7 +80,7 @@ const confirmRemoveInterview = async (id: string): Promise<void> => {
 
 onMounted(async () => {
   const listInterviews: Array<Interview> =  await getAllInterviews();
-  interviews.value = [...listInterviews];
+  interviews.value = listInterviews;
 
   isLoading.value = false;
 });
@@ -69,6 +98,28 @@ onMounted(async () => {
   </app-message>
   <div v-else>
     <h1>List of interviews</h1>
+    <div class="flex align-items-center mb-4">
+      <div class="flex align-items-center mr-2">
+        <app-radio
+            input-id="interviewResult2"
+            name="result"
+            value="Refusal"
+            v-model="selectedFilterResult"
+        />
+        <label for="interviewResult1" class="ml-2">Refusal</label>
+      </div>
+      <div class="flex align-items-center mr-2">
+        <app-radio
+            input-id="interviewResult2"
+            name="result"
+            value="Offer"
+            v-model="selectedFilterResult"
+        />
+        <label for="interviewResult2" class="ml-2">Offer</label>
+      </div>
+      <app-button class="mr-2" label="Apply" @click="submitFilter" :disabled="!selectedFilterResult"/>
+      <app-button class="mr-2" label="Reset" severity="danger" @click="clearFilter" :disabled="!selectedFilterResult"/>
+    </div>
     <app-datatable :value="interviews">
       <app-column field="company" header="Company"></app-column>
       <app-column field="hrName" header="HR name"></app-column>

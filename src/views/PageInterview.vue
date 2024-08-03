@@ -137,7 +137,7 @@ onMounted(async () => await getData());
           </div>
           <div class="flex align-items-center">
             <app-radio input-id="interviewResult2" name="result" value="Offer" v-model="interview.result"/>
-            <label for="interviewResult1" class="ml-2">Offer</label>
+            <label for="interviewResult2" class="ml-2">Offer</label>
           </div>
         </div>
         <app-button label="Save" icon="pi pi-save" @click="saveInterview"/>
