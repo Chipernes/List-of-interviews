@@ -1,3 +1,5 @@
+import type {Stage} from "@/types/Stage";
+
 export type Interview = {
     id: string,
     company: string,
@@ -6,5 +8,9 @@ export type Interview = {
     contactTelegram?: string,
     contactWhatsApp?: string,
     contactPhone?: string
-    createdAt: Date
+    createdAt: Date,
+    salaryFrom?: number,
+    salaryTo?: number,
+    stages?: Stage[],
+    result?: 'Refusal' | 'Offer'
 }

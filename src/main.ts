@@ -19,6 +19,12 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import ConfirmDialog from 'primevue/confirmdialog'
 import InlineMessage from 'primevue/inlinemessage'
+import InputNumber from "primevue/inputnumber";
+import Textarea from "primevue/textarea";
+import Calendar from "primevue/calendar";
+import RadioButton from "primevue/radiobutton";
+import Badge from "primevue/badge";
+import Tooltip from "primevue/tooltip";
 
 import App from './App.vue'
 import router from './router'
@@ -48,6 +54,7 @@ app.use(PrimeVue, {
             }
         }
     })
+app.directive('tooltip', Tooltip)
 app.component('app-menubar', Menubar)
 app.component('app-button', Button)
 app.component('app-input-text', InputText)
@@ -58,6 +65,11 @@ app.component('app-datatable', DataTable)
 app.component('app-column', Column)
 app.component('app-dialog', ConfirmDialog)
 app.component('app-message', InlineMessage)
+app.component('app-input-number', InputNumber)
+app.component('app-textarea', Textarea)
+app.component('app-calendar', Calendar)
+app.component('app-radio', RadioButton)
+app.component('app-badge', Badge)
 
 app.mount('#app');
 

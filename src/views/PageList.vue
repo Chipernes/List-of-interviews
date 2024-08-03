@@ -74,7 +74,22 @@ onMounted(async () => {
       <app-column field="hrName" header="HR name"></app-column>
       <app-column field="vacancyLink" header="Vacancy Link">
         <template #body="slotProps">
-          <a :href="slotProps.data.vacancyLink" target="_blank">{{ slotProps.data.vacancyLink }}</a>
+          <a :href="slotProps.data.vacancyLink" target="_blank">Vacancy link</a>
+        </template>
+      </app-column>
+      <app-column header="Stages completed">
+        <template #body="slotProps">
+          <span v-if="!slotProps.data.stages">Not filled</span>
+          <div v-else class="interview-stages">
+            <app-badge
+                v-for="(stage, index) in slotProps.data.stages"
+                :key="index"
+                :value="index + 1"
+                rounded
+                severity="info"
+                v-tooltip.top="stage.name"
+            />
+          </div>
         </template>
       </app-column>
       <app-column header="Contacts">
@@ -106,6 +121,23 @@ onMounted(async () => {
               <span class="contacts__icon pi pi-phone"></span>
             </a>
           </div>
+        </template>
+      </app-column>
+      <app-column header="Salary range">
+        <template #body="slotProps">
+          <span v-if="!slotProps.data.salaryFrom || !slotProps.data.salaryTo">Not filled</span>
+          <span v-else>{{ slotProps.data.salaryFrom }} - {{ slotProps.data.salaryTo }}</span>
+        </template>
+      </app-column>
+      <app-column header="Result">
+        <template #body="slotProps">
+          <span v-if="!slotProps.data.result">Not filled</span>
+          <template v-else>
+            <app-badge
+                :severity="slotProps.data.result === 'Offer' ? 'success' : 'danger'"
+                :value="slotProps.data.result === 'Offer' ? 'Offer' : 'Refusal'"
+            />
+          </template>
         </template>
       </app-column>
       <app-column>
