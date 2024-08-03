@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
 import {useRoute} from "vue-router";
-import {getFirestore, doc, getDoc, updateDoc} from "firebase/firestore";
+import {getFirestore, doc, getDoc, updateDoc, Timestamp} from "firebase/firestore";
 import {useUserStore} from "@/stores/user";
 import type {Interview} from "@/types/Interview";
-import dayjs from "dayjs";
+import type {Stage} from "@/types/Stage";
 
 const db= getFirestore();
 const userStore = useUserStore();
@@ -18,7 +18,24 @@ const docref = doc(db, `users/${userStore.userId}/interviews`, route.params.id a
 const getData = async (): Promise<void> => {
   isLoading.value = true;
   const docSnap = await getDoc(docref);
-  interview.value = docSnap.data() as Interview;
+
+  if (docSnap) {
+    const data = docSnap.data() as Interview;
+
+    if (data.stages && data.stages.length) {
+      data.stages = data.stages.map((stage: Stage) => {
+        if (stage.date && stage.date instanceof Timestamp) {
+          return {
+            ...stage,
+            date: stage.date.toDate()
+          }
+        }
+
+        return stage
+      })
+    }
+    interview.value = data;
+  }
   isLoading.value = false;
 };
 
@@ -27,7 +44,7 @@ const addStage = () => {
     if (!interview.value.stages) {
       interview.value.stages = [];
     }
-    interview.value.stages.push({name: '', date: '', description: ''})
+    interview.value.stages.push({name: '', date: null, description: ''})
   }
 };
 
@@ -45,13 +62,6 @@ const saveInterview = async (): Promise<void> => {
   await updateDoc(docref, {...interview.value});
   await getData();
   isLoading.value = false;
-};
-
-const saveDateStage = (index: number) => {
-  if (interview.value?.stages && interview.value.stages.length) {
-    const date = interview.value.stages[index].date;
-    interview.value.stages[index].date = dayjs(date).format('DD.MM.YYYY');
-  }
 };
 
 onMounted(async () => await getData());
@@ -110,7 +120,6 @@ onMounted(async () => await getData());
                   :id="`stage-date-${index}`"
                   date-format="dd.mm.yy"
                   v-model="stage.date"
-                  @date-select="saveDateStage(index)"
               />
             </div>
             <div class="flex flex-column gap-2">

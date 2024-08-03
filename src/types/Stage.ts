@@ -1,5 +1,5 @@
 export type Stage = {
     name: string,
-    date: string,
+    date: null | Date,
     description: string
 }
